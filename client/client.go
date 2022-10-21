@@ -2,9 +2,12 @@ package main
 
 import (
 	"flag"
-	"github.com/gorilla/websocket"
+	"fmt"
 	"log"
 	"net/url"
+	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 var addr = flag.String("addr", "localhost:8088", "http server")
@@ -23,10 +26,19 @@ func main() {
 	}
 	defer conn.Close()
 
-	_, msg, err := conn.ReadMessage()
-	if err != nil {
-		log.Fatal("read message error", err)
-		return
+	SendMessage(conn)
+}
+
+func SendMessage(conn *websocket.Conn) error {
+	ticker := time.NewTicker(2 * time.Second)
+	for range ticker.C {
+		tp, msg, err := conn.ReadMessage()
+		if err != nil {
+			log.Println("write:", err)
+			return err
+		}
+		log.Println("message type:" + fmt.Sprint(tp))
+		log.Println("message:" + string(msg))
 	}
-	log.Println(string(msg))
+	return nil
 }
