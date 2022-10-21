@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/url"
-	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -30,8 +29,7 @@ func main() {
 }
 
 func SendMessage(conn *websocket.Conn) error {
-	ticker := time.NewTicker(2 * time.Second)
-	for range ticker.C {
+	for {
 		tp, msg, err := conn.ReadMessage()
 		if err != nil {
 			log.Println("write:", err)
@@ -40,5 +38,4 @@ func SendMessage(conn *websocket.Conn) error {
 		log.Println("message type:" + fmt.Sprint(tp))
 		log.Println("message:" + string(msg))
 	}
-	return nil
 }
